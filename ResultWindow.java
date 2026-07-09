@@ -5,6 +5,7 @@ import java.util.List;
 
 public class ResultWindow extends JFrame {
     public ResultWindow(QuizManager manager) {
+        manager.saveQuizToHistory();
         JFrame frame = UIHelper.createFrame("QuizMaster - Results", 700, 600);
         frame.setLayout(new BorderLayout());
 

@@ -177,6 +177,13 @@ public class QuizManager {
         return currentIndex >= currentQuiz.size();
     }
 
+    public void saveQuizToHistory() {
+        QuizResult result = new QuizResult("Player", score, currentQuiz.size(), totalPoints, maxStreak);
+        quizHistory.add(0, result);
+        if (quizHistory.size() > 50) quizHistory = quizHistory.subList(0, 50);
+        saveQuizHistory();
+    }
+
     public void saveHighScore(String playerName) {
         QuizResult result = new QuizResult(playerName, score, currentQuiz.size(), totalPoints, maxStreak);
         highScores.add(result);
