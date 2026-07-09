@@ -80,22 +80,21 @@ public class UIHelper {
             }
         };
         header.setPreferredSize(new Dimension(0, 80));
-        header.setLayout(new GridBagLayout());
+        header.setLayout(new BorderLayout());
+        header.setBorder(BorderFactory.createEmptyBorder(0, 25, 0, 25));
 
+        JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
+        leftPanel.setOpaque(false);
         JLabel iconLabel = new JLabel(icon);
         iconLabel.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 32));
         iconLabel.setForeground(Color.WHITE);
-
         JLabel titleLabel = new JLabel(title);
         titleLabel.setFont(getFont(Font.BOLD, 24));
         titleLabel.setForeground(Color.WHITE);
+        leftPanel.add(iconLabel);
+        leftPanel.add(titleLabel);
 
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = 0; gbc.gridy = 0; gbc.insets = new Insets(0, 0, 0, 10);
-        header.add(iconLabel, gbc);
-        gbc.gridx = 1;
-        header.add(titleLabel, gbc);
-
+        header.add(leftPanel, BorderLayout.CENTER);
         return header;
     }
 
