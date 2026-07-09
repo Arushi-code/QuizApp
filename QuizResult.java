@@ -8,18 +8,24 @@ public class QuizResult implements Serializable {
     private String playerName;
     private int score;
     private int totalQuestions;
+    private int totalPoints;
+    private int maxStreak;
     private LocalDateTime dateTime;
 
-    public QuizResult(String playerName, int score, int totalQuestions) {
+    public QuizResult(String playerName, int score, int totalQuestions, int totalPoints, int maxStreak) {
         this.playerName = playerName;
         this.score = score;
         this.totalQuestions = totalQuestions;
+        this.totalPoints = totalPoints;
+        this.maxStreak = maxStreak;
         this.dateTime = LocalDateTime.now();
     }
 
     public String getPlayerName() { return playerName; }
     public int getScore() { return score; }
     public int getTotalQuestions() { return totalQuestions; }
+    public int getTotalPoints() { return totalPoints; }
+    public int getMaxStreak() { return maxStreak; }
     public LocalDateTime getDateTime() { return dateTime; }
 
     public int getPercentage() {
@@ -42,6 +48,6 @@ public class QuizResult implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("%s - %d/%d (%d%%) - %s", playerName, score, totalQuestions, getPercentage(), getGrade());
+        return String.format("%s - %d/%d (%d%%) - %d pts - %s", playerName, score, totalQuestions, getPercentage(), totalPoints, getGrade());
     }
 }

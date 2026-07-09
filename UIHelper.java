@@ -5,8 +5,25 @@ import java.awt.event.*;
 import java.awt.geom.*;
 
 public class UIHelper {
-    public static final Color BG = new Color(240, 242, 245);
-    public static final Color CARD_BG = Color.WHITE;
+    public static boolean darkMode = false;
+
+    // Light mode colors
+    public static final Color LIGHT_BG = new Color(240, 242, 245);
+    public static final Color LIGHT_CARD_BG = Color.WHITE;
+    public static final Color LIGHT_TEXT_DARK = new Color(30, 30, 30);
+    public static final Color LIGHT_TEXT_GRAY = new Color(120, 130, 140);
+
+    // Dark mode colors
+    public static final Color DARK_BG = new Color(30, 30, 35);
+    public static final Color DARK_CARD_BG = new Color(45, 45, 50);
+    public static final Color DARK_TEXT_DARK = new Color(230, 230, 235);
+    public static final Color DARK_TEXT_GRAY = new Color(160, 160, 170);
+
+    public static Color BG = LIGHT_BG;
+    public static Color CARD_BG = LIGHT_CARD_BG;
+    public static Color TEXT_DARK = LIGHT_TEXT_DARK;
+    public static Color TEXT_GRAY = LIGHT_TEXT_GRAY;
+
     public static final Color PRIMARY = new Color(103, 58, 183);
     public static final Color PRIMARY_HOVER = new Color(81, 45, 153);
     public static final Color PRIMARY_LIGHT = new Color(237, 231, 246);
@@ -15,8 +32,6 @@ public class UIHelper {
     public static final Color WARNING = new Color(255, 140, 0);
     public static final Color DANGER = new Color(220, 53, 69);
     public static final Color DANGER_HOVER = new Color(185, 40, 55);
-    public static final Color TEXT_DARK = new Color(30, 30, 30);
-    public static final Color TEXT_GRAY = new Color(120, 130, 140);
     public static final Color TEXT_LIGHT = new Color(180, 190, 200);
     public static final Color TABLE_BORDER = new Color(220, 225, 235);
     public static final Color SHADOW = new Color(0, 0, 0, 30);
@@ -24,6 +39,21 @@ public class UIHelper {
     public static final Color INCORRECT = new Color(220, 53, 69);
     public static final Color TIMER_BG = new Color(255, 235, 238);
     public static final Color TIMER_TEXT = new Color(211, 47, 47);
+
+    public static void toggleDarkMode() {
+        darkMode = !darkMode;
+        if (darkMode) {
+            BG = DARK_BG;
+            CARD_BG = DARK_CARD_BG;
+            TEXT_DARK = DARK_TEXT_DARK;
+            TEXT_GRAY = DARK_TEXT_GRAY;
+        } else {
+            BG = LIGHT_BG;
+            CARD_BG = LIGHT_CARD_BG;
+            TEXT_DARK = LIGHT_TEXT_DARK;
+            TEXT_GRAY = LIGHT_TEXT_GRAY;
+        }
+    }
 
     public static JFrame createFrame(String title, int width, int height) {
         JFrame frame = new JFrame(title);
@@ -87,6 +117,9 @@ public class UIHelper {
         JTextField field = new JTextField(cols);
         field.setFont(getFont(Font.PLAIN, 14));
         field.setPreferredSize(new Dimension(220, 40));
+        field.setBackground(CARD_BG);
+        field.setForeground(TEXT_DARK);
+        field.setCaretColor(TEXT_DARK);
         field.setBorder(BorderFactory.createCompoundBorder(
                 new LineBorder(TABLE_BORDER, 1, true),
                 BorderFactory.createEmptyBorder(8, 12, 8, 12)));
@@ -166,21 +199,6 @@ public class UIHelper {
             }
         });
 
-        return panel;
-    }
-
-    public static JPanel createTimerPanel() {
-        JPanel panel = new JPanel() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                Graphics2D g2d = (Graphics2D) g;
-                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2d.setColor(TIMER_BG);
-                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20);
-            }
-        };
-        panel.setOpaque(false);
-        panel.setPreferredSize(new Dimension(100, 40));
         return panel;
     }
 }

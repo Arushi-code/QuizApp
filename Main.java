@@ -4,6 +4,7 @@ import java.util.List;
 
 public class Main {
     private QuizManager manager;
+    private JFrame currentFrame;
 
     public Main() {
         manager = new QuizManager();
@@ -11,10 +12,32 @@ public class Main {
     }
 
     private void showHomeScreen() {
-        JFrame frame = UIHelper.createFrame("QuizMaster - Home", 550, 500);
+        JFrame frame = UIHelper.createFrame("QuizMaster - Home", 550, 550);
+        currentFrame = frame;
         frame.setLayout(new BorderLayout());
 
-        frame.add(UIHelper.createGradientHeader("\uD83C\uDFC6", "QUIZMASTER"), BorderLayout.NORTH);
+        // Header with dark mode toggle
+        JPanel header = UIHelper.createGradientHeader("\uD83C\uDFC6", "QUIZMASTER");
+
+        JToggleButton darkToggle = new JToggleButton(UIHelper.darkMode ? "\u2600" : "\u263E");
+        darkToggle.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 18));
+        darkToggle.setOpaque(false);
+        darkToggle.setContentAreaFilled(false);
+        darkToggle.setBorderPainted(false);
+        darkToggle.setForeground(Color.WHITE);
+        darkToggle.setToolTipText("Toggle Dark Mode");
+        darkToggle.addActionListener(e -> {
+            UIHelper.toggleDarkMode();
+            darkToggle.setText(UIHelper.darkMode ? "\u2600" : "\u263E");
+            frame.getContentPane().setBackground(UIHelper.BG);
+            frame.repaint();
+        });
+
+        JPanel headerRight = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        headerRight.setOpaque(false);
+        headerRight.add(darkToggle);
+        header.add(headerRight, BorderLayout.EAST);
+        frame.add(header, BorderLayout.NORTH);
 
         JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.setBackground(UIHelper.BG);
@@ -49,7 +72,6 @@ public class Main {
         gbc2.fill = GridBagConstraints.HORIZONTAL;
         gbc2.weightx = 1;
 
-        // Category
         JLabel catLabel = UIHelper.createLabel("Category:");
         catLabel.setFont(UIHelper.getFont(Font.BOLD, 13));
         List<String> categories = manager.getCategories();
@@ -58,7 +80,6 @@ public class Main {
         catCombo.setFont(UIHelper.getFont(Font.PLAIN, 13));
         catCombo.setPreferredSize(new Dimension(200, 35));
 
-        // Difficulty
         JLabel diffLabel = UIHelper.createLabel("Difficulty:");
         diffLabel.setFont(UIHelper.getFont(Font.BOLD, 13));
         List<String> difficulties = manager.getDifficulties();
@@ -66,13 +87,17 @@ public class Main {
         diffCombo.setFont(UIHelper.getFont(Font.PLAIN, 13));
         diffCombo.setPreferredSize(new Dimension(200, 35));
 
-        // Number of questions
         JLabel countLabel = UIHelper.createLabel("Number of Questions:");
         countLabel.setFont(UIHelper.getFont(Font.BOLD, 13));
         Integer[] counts = {5, 10, 15, 20};
         JComboBox<Integer> countCombo = new JComboBox<>(counts);
         countCombo.setFont(UIHelper.getFont(Font.PLAIN, 13));
         countCombo.setPreferredSize(new Dimension(200, 35));
+
+        // Points info
+        JLabel pointsInfo = UIHelper.createLabel("\uD83D\uDCA1 Easy=1x | Medium=2x | Hard=3x | Streak bonus up to +5");
+        pointsInfo.setFont(UIHelper.getFont(Font.PLAIN, 11));
+        pointsInfo.setForeground(UIHelper.TEXT_GRAY);
 
         gbc2.gridx = 0; gbc2.gridy = 0;
         settingsCard.add(catLabel, gbc2);
@@ -86,8 +111,9 @@ public class Main {
         settingsCard.add(countLabel, gbc2);
         gbc2.gridy = 5;
         settingsCard.add(countCombo, gbc2);
+        gbc2.gridy = 6;
+        settingsCard.add(pointsInfo, gbc2);
 
-        // Start Button
         JButton startBtn = UIHelper.createButton("Start Quiz", UIHelper.PRIMARY);
         startBtn.setPreferredSize(new Dimension(200, 45));
         startBtn.addActionListener(e -> {
@@ -104,27 +130,31 @@ public class Main {
             new QuizWindow(manager);
         });
 
-        gbc2.gridy = 6;
+        gbc2.gridy = 7;
         settingsCard.add(startBtn, gbc2);
 
         mainPanel.add(settingsCard, BorderLayout.CENTER);
 
-        // High Scores Button
-        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        // Bottom buttons
+        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
         bottomPanel.setBackground(UIHelper.BG);
 
         JButton scoresBtn = UIHelper.createButton("High Scores", UIHelper.WARNING);
-        scoresBtn.addActionListener(e -> showHighScores(frame));
+        scoresBtn.addActionListener(e -> showHighScores());
+
+        JButton historyBtn = UIHelper.createButton("Quiz History", new Color(103, 58, 183));
+        historyBtn.addActionListener(e -> showQuizHistory());
 
         bottomPanel.add(scoresBtn);
+        bottomPanel.add(historyBtn);
         mainPanel.add(bottomPanel, BorderLayout.SOUTH);
 
         frame.add(mainPanel, BorderLayout.CENTER);
         frame.setVisible(true);
     }
 
-    private void showHighScores(JFrame parent) {
-        JFrame frame = UIHelper.createFrame("QuizMaster - High Scores", 500, 400);
+    private void showHighScores() {
+        JFrame frame = UIHelper.createFrame("QuizMaster - High Scores", 600, 400);
         frame.setLayout(new BorderLayout());
 
         frame.add(UIHelper.createGradientHeader("\uD83C\uDFC6", "HIGH SCORES"), BorderLayout.NORTH);
@@ -140,15 +170,16 @@ public class Main {
             emptyLabel.setHorizontalAlignment(SwingConstants.CENTER);
             mainPanel.add(emptyLabel, BorderLayout.CENTER);
         } else {
-            String[] columns = {"#", "Name", "Score", "Grade", "Date"};
-            Object[][] data = new Object[scores.size()][5];
+            String[] columns = {"#", "Name", "Score", "Points", "Streak", "Grade"};
+            Object[][] data = new Object[scores.size()][6];
             for (int i = 0; i < scores.size(); i++) {
                 QuizResult r = scores.get(i);
                 data[i][0] = i + 1;
                 data[i][1] = r.getPlayerName();
                 data[i][2] = r.getScore() + "/" + r.getTotalQuestions() + " (" + r.getPercentage() + "%)";
-                data[i][3] = r.getGrade();
-                data[i][4] = r.getFormattedDate();
+                data[i][3] = r.getTotalPoints() + " pts";
+                data[i][4] = r.getMaxStreak() + "x";
+                data[i][5] = r.getGrade();
             }
 
             JTable table = new JTable(data, columns);
@@ -158,6 +189,64 @@ public class Main {
             table.getTableHeader().setBackground(UIHelper.PRIMARY);
             table.getTableHeader().setForeground(Color.WHITE);
             table.setEnabled(false);
+            table.setBackground(UIHelper.CARD_BG);
+            table.setForeground(UIHelper.TEXT_DARK);
+
+            JScrollPane scrollPane = new JScrollPane(table);
+            scrollPane.setBorder(BorderFactory.createEmptyBorder());
+            mainPanel.add(scrollPane, BorderLayout.CENTER);
+        }
+
+        JButton closeBtn = UIHelper.createButton("Close", UIHelper.DANGER);
+        closeBtn.addActionListener(e -> frame.dispose());
+        JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        btnPanel.setBackground(UIHelper.BG);
+        btnPanel.add(closeBtn);
+        mainPanel.add(btnPanel, BorderLayout.SOUTH);
+
+        frame.add(mainPanel, BorderLayout.CENTER);
+        frame.setVisible(true);
+    }
+
+    private void showQuizHistory() {
+        JFrame frame = UIHelper.createFrame("QuizMaster - Quiz History", 650, 450);
+        frame.setLayout(new BorderLayout());
+
+        frame.add(UIHelper.createGradientHeader("\uD83D\uDCD6", "QUIZ HISTORY"), BorderLayout.NORTH);
+
+        JPanel mainPanel = new JPanel(new BorderLayout());
+        mainPanel.setBackground(UIHelper.BG);
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(15, 25, 15, 25));
+
+        List<QuizResult> history = manager.getQuizHistory();
+
+        if (history.isEmpty()) {
+            JLabel emptyLabel = UIHelper.createLabel("No quiz history yet! Play a quiz to see your history.");
+            emptyLabel.setHorizontalAlignment(SwingConstants.CENTER);
+            mainPanel.add(emptyLabel, BorderLayout.CENTER);
+        } else {
+            String[] columns = {"#", "Name", "Score", "Points", "Streak", "Grade", "Date"};
+            Object[][] data = new Object[history.size()][7];
+            for (int i = 0; i < history.size(); i++) {
+                QuizResult r = history.get(i);
+                data[i][0] = i + 1;
+                data[i][1] = r.getPlayerName();
+                data[i][2] = r.getScore() + "/" + r.getTotalQuestions() + " (" + r.getPercentage() + "%)";
+                data[i][3] = r.getTotalPoints() + " pts";
+                data[i][4] = r.getMaxStreak() + "x";
+                data[i][5] = r.getGrade();
+                data[i][6] = r.getFormattedDate();
+            }
+
+            JTable table = new JTable(data, columns);
+            table.setFont(UIHelper.getFont(Font.PLAIN, 12));
+            table.setRowHeight(32);
+            table.getTableHeader().setFont(UIHelper.getFont(Font.BOLD, 12));
+            table.getTableHeader().setBackground(UIHelper.PRIMARY);
+            table.getTableHeader().setForeground(Color.WHITE);
+            table.setEnabled(false);
+            table.setBackground(UIHelper.CARD_BG);
+            table.setForeground(UIHelper.TEXT_DARK);
 
             JScrollPane scrollPane = new JScrollPane(table);
             scrollPane.setBorder(BorderFactory.createEmptyBorder());

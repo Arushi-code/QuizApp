@@ -28,7 +28,7 @@ public class ResultWindow extends JFrame {
             }
         };
         scoreCard.setOpaque(false);
-        scoreCard.setPreferredSize(new Dimension(0, 120));
+        scoreCard.setPreferredSize(new Dimension(0, 130));
         scoreCard.setLayout(new GridBagLayout());
 
         JPanel scoreContent = new JPanel();
@@ -38,14 +38,16 @@ public class ResultWindow extends JFrame {
         int score = manager.getScore();
         int total = manager.getTotalQuestions();
         int pct = (score * 100) / total;
+        int points = manager.getTotalPoints();
+        int streak = manager.getMaxStreak();
 
         JLabel scoreLabel = new JLabel(score + " / " + total);
         scoreLabel.setFont(UIHelper.getFont(Font.BOLD, 36));
         scoreLabel.setForeground(Color.WHITE);
         scoreLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        JLabel pctLabel = new JLabel(pct + "%  |  Grade: " + getGrade(pct));
-        pctLabel.setFont(UIHelper.getFont(Font.PLAIN, 16));
+        JLabel pctLabel = new JLabel(pct + "%  |  Grade: " + getGrade(pct) + "  |  \u2B50 " + points + " pts  |  \uD83D\uDD25 Best Streak: " + streak);
+        pctLabel.setFont(UIHelper.getFont(Font.PLAIN, 14));
         pctLabel.setForeground(new Color(220, 255, 220));
         pctLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
@@ -102,11 +104,13 @@ public class ResultWindow extends JFrame {
 
         List<Question> questions = manager.getCurrentQuiz();
         List<Integer> answers = manager.getUserAnswers();
+        List<Integer> pointsList = manager.getPointsPerQuestion();
 
         for (int i = 0; i < questions.size(); i++) {
             Question q = questions.get(i);
             int userAns = answers.get(i);
             boolean correct = q.isCorrect(userAns);
+            int qPoints = pointsList.get(i);
 
             JPanel row = new JPanel(new BorderLayout());
             row.setBackground(UIHelper.CARD_BG);
@@ -115,7 +119,8 @@ public class ResultWindow extends JFrame {
                     new LineBorder(UIHelper.TABLE_BORDER, 1, true)));
 
             String icon = correct ? "\u2705" : "\u274C";
-            JLabel qLabel = new JLabel(icon + "  Q" + (i + 1) + ". " + q.getQuestion());
+            String pointsText = correct ? " (+" + qPoints + " pts)" : "";
+            JLabel qLabel = new JLabel(icon + "  Q" + (i + 1) + ". " + q.getQuestion() + pointsText);
             qLabel.setFont(UIHelper.getFont(Font.PLAIN, 13));
             qLabel.setBorder(BorderFactory.createEmptyBorder(8, 12, 8, 12));
             row.add(qLabel, BorderLayout.CENTER);
