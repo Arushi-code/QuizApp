@@ -6,14 +6,14 @@ import java.util.List;
 public class ResultWindow extends JFrame {
     public ResultWindow(QuizManager manager) {
         manager.saveQuizToHistory();
-        JFrame frame = UIHelper.createFrame("QuizMaster - Results", 700, 600);
+        JFrame frame = UIHelper.createFrame("QuizMaster - Results", 720, 620);
         frame.setLayout(new BorderLayout());
 
         frame.add(UIHelper.createGradientHeader("\uD83C\uDFC6", "QUIZ COMPLETE"), BorderLayout.NORTH);
 
         JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.setBackground(UIHelper.BG);
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(15, 25, 15, 25));
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
 
         // Score Card
         JPanel scoreCard = new JPanel() {
@@ -22,10 +22,10 @@ public class ResultWindow extends JFrame {
                 Graphics2D g2d = (Graphics2D) g;
                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 g2d.setColor(UIHelper.SHADOW);
-                g2d.fillRoundRect(3, 3, getWidth() - 3, getHeight() - 3, 18, 18);
-                GradientPaint gp = new GradientPaint(0, 0, new Color(46, 160, 67), getWidth(), getHeight(), new Color(36, 130, 52));
+                g2d.fillRoundRect(4, 4, getWidth() - 4, getHeight() - 4, 18, 18);
+                GradientPaint gp = new GradientPaint(0, 0, new Color(34, 197, 94), getWidth(), getHeight(), new Color(22, 163, 74));
                 g2d.setPaint(gp);
-                g2d.fillRoundRect(0, 0, getWidth() - 3, getHeight() - 3, 18, 18);
+                g2d.fillRoundRect(0, 0, getWidth() - 4, getHeight() - 4, 18, 18);
             }
         };
         scoreCard.setOpaque(false);
@@ -43,34 +43,43 @@ public class ResultWindow extends JFrame {
         int streak = manager.getMaxStreak();
 
         JLabel scoreLabel = new JLabel(score + " / " + total);
-        scoreLabel.setFont(UIHelper.getFont(Font.BOLD, 36));
+        scoreLabel.setFont(UIHelper.getFont(Font.BOLD, 40));
         scoreLabel.setForeground(Color.WHITE);
         scoreLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        JLabel pctLabel = new JLabel(pct + "%  |  Grade: " + getGrade(pct) + "  |  \u2B50 " + points + " pts  |  \uD83D\uDD25 Best Streak: " + streak);
-        pctLabel.setFont(UIHelper.getFont(Font.PLAIN, 14));
+        JLabel pctLabel = new JLabel(pct + "%  |  Grade: " + getGrade(pct));
+        pctLabel.setFont(UIHelper.getFont(Font.BOLD, 16));
         pctLabel.setForeground(new Color(220, 255, 220));
         pctLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
+        JLabel statsLabel = new JLabel("\u2B50 " + points + " pts   |   \uD83D\uDD25 Best Streak: " + streak);
+        statsLabel.setFont(UIHelper.getFont(Font.PLAIN, 14));
+        statsLabel.setForeground(new Color(200, 245, 200));
+        statsLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
         scoreContent.add(scoreLabel);
-        scoreContent.add(Box.createVerticalStrut(5));
+        scoreContent.add(Box.createVerticalStrut(6));
         scoreContent.add(pctLabel);
+        scoreContent.add(Box.createVerticalStrut(4));
+        scoreContent.add(statsLabel);
 
         scoreCard.add(scoreContent);
 
-        JPanel scoreSection = new JPanel(new BorderLayout());
-        scoreSection.setBackground(UIHelper.BG);
-        scoreSection.add(scoreCard, BorderLayout.CENTER);
-        mainPanel.add(scoreSection, BorderLayout.NORTH);
+        mainPanel.add(scoreCard, BorderLayout.NORTH);
 
         // Save score
-        JPanel savePanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
-        savePanel.setBackground(UIHelper.BG);
+        JPanel saveCard = UIHelper.createCard();
+        saveCard.setLayout(new FlowLayout(FlowLayout.CENTER, 12, 10));
+        saveCard.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createEmptyBorder(10, 0, 10, 0),
+                new LineBorder(UIHelper.TABLE_BORDER, 1, true)));
 
-        JTextField nameField = UIHelper.createTextField(15);
-        nameField.setPreferredSize(new Dimension(180, 35));
-
+        JLabel nameLabel = UIHelper.createLabel("Your Name:");
+        nameLabel.setFont(UIHelper.getFont(Font.BOLD, 13));
+        JTextField nameField = UIHelper.createTextField(12);
+        nameField.setPreferredSize(new Dimension(160, 38));
         JButton saveBtn = UIHelper.createButton("Save Score", UIHelper.SUCCESS);
+        saveBtn.setPreferredSize(new Dimension(130, 38));
         JLabel saveStatus = new JLabel(" ");
         saveStatus.setFont(UIHelper.getFont(Font.PLAIN, 12));
 
@@ -78,26 +87,29 @@ public class ResultWindow extends JFrame {
             String name = nameField.getText().trim();
             if (name.isEmpty()) {
                 saveStatus.setForeground(UIHelper.DANGER);
-                saveStatus.setText("Enter your name!");
+                saveStatus.setText("\u274C Enter name!");
                 return;
             }
             manager.saveHighScore(name);
             saveStatus.setForeground(UIHelper.SUCCESS);
-            saveStatus.setText("Score saved!");
+            saveStatus.setText("\u2705 Saved!");
             saveBtn.setEnabled(false);
         });
 
-        savePanel.add(UIHelper.createLabel("Your Name:"));
-        savePanel.add(nameField);
-        savePanel.add(saveBtn);
-        savePanel.add(saveStatus);
+        saveCard.add(nameLabel);
+        saveCard.add(nameField);
+        saveCard.add(saveBtn);
+        saveCard.add(saveStatus);
 
-        mainPanel.add(savePanel, BorderLayout.CENTER);
+        JPanel saveSection = new JPanel(new BorderLayout());
+        saveSection.setBackground(UIHelper.BG);
+        saveSection.add(saveCard, BorderLayout.CENTER);
+        mainPanel.add(saveSection, BorderLayout.CENTER);
 
         // Answer Review
         JLabel reviewTitle = UIHelper.createBoldLabel("Answer Review", 16);
-        reviewTitle.setBorder(BorderFactory.createEmptyBorder(10, 5, 5, 5));
-        mainPanel.add(reviewTitle, BorderLayout.CENTER);
+        reviewTitle.setBorder(BorderFactory.createEmptyBorder(8, 5, 8, 5));
+        mainPanel.add(reviewTitle, BorderLayout.AFTER_LINE_ENDS);
 
         JPanel reviewPanel = new JPanel();
         reviewPanel.setBackground(UIHelper.BG);
@@ -113,17 +125,26 @@ public class ResultWindow extends JFrame {
             boolean correct = q.isCorrect(userAns);
             int qPoints = pointsList.get(i);
 
-            JPanel row = new JPanel(new BorderLayout());
-            row.setBackground(UIHelper.CARD_BG);
+            JPanel row = new JPanel(new BorderLayout()) {
+                @Override
+                protected void paintComponent(Graphics g) {
+                    Graphics2D g2d = (Graphics2D) g;
+                    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                    g2d.setColor(UIHelper.CARD_BG);
+                    g2d.fillRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 10, 10);
+                }
+            };
+            row.setOpaque(false);
             row.setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createEmptyBorder(0, 0, 8, 0),
-                    new LineBorder(UIHelper.TABLE_BORDER, 1, true)));
+                    BorderFactory.createEmptyBorder(0, 0, 6, 0),
+                    BorderFactory.createCompoundBorder(
+                            new LineBorder(UIHelper.TABLE_BORDER, 1, true),
+                            BorderFactory.createEmptyBorder(10, 14, 10, 14))));
 
             String icon = correct ? "\u2705" : "\u274C";
-            String pointsText = correct ? " (+" + qPoints + " pts)" : "";
+            String pointsText = correct ? "  (+" + qPoints + " pts)" : "";
             JLabel qLabel = new JLabel(icon + "  Q" + (i + 1) + ". " + q.getQuestion() + pointsText);
             qLabel.setFont(UIHelper.getFont(Font.PLAIN, 13));
-            qLabel.setBorder(BorderFactory.createEmptyBorder(8, 12, 8, 12));
             row.add(qLabel, BorderLayout.CENTER);
 
             if (!correct) {
@@ -131,8 +152,7 @@ public class ResultWindow extends JFrame {
                 JLabel ansLabel = new JLabel("Correct: " + correctAns);
                 ansLabel.setFont(UIHelper.getFont(Font.PLAIN, 11));
                 ansLabel.setForeground(UIHelper.CORRECT);
-                ansLabel.setBorder(BorderFactory.createEmptyBorder(0, 12, 8, 12));
-                row.add(ansLabel, BorderLayout.SOUTH);
+                row.add(ansLabel, BorderLayout.EAST);
             }
 
             reviewPanel.add(row);
@@ -143,7 +163,7 @@ public class ResultWindow extends JFrame {
         scrollPane.getViewport().setBackground(UIHelper.BG);
 
         // Buttons
-        JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
+        JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
         btnPanel.setBackground(UIHelper.BG);
 
         JButton retryBtn = UIHelper.createButton("Play Again", UIHelper.PRIMARY);
@@ -161,13 +181,20 @@ public class ResultWindow extends JFrame {
         btnPanel.add(retryBtn);
         btnPanel.add(homeBtn);
 
-        // Final layout
+        // Bottom layout
         JPanel bottomPanel = new JPanel(new BorderLayout());
         bottomPanel.setBackground(UIHelper.BG);
         bottomPanel.add(scrollPane, BorderLayout.CENTER);
         bottomPanel.add(btnPanel, BorderLayout.SOUTH);
 
-        mainPanel.add(bottomPanel, BorderLayout.SOUTH);
+        // Main layout with split pane
+        JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, saveSection, bottomPanel);
+        splitPane.setDividerLocation(100);
+        splitPane.setDividerSize(0);
+        splitPane.setBorder(BorderFactory.createEmptyBorder());
+        splitPane.setBackground(UIHelper.BG);
+
+        mainPanel.add(splitPane, BorderLayout.SOUTH);
 
         frame.add(mainPanel, BorderLayout.CENTER);
         frame.setVisible(true);

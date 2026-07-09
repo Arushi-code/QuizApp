@@ -12,7 +12,7 @@ public class Main {
     }
 
     private void showHomeScreen() {
-        JFrame frame = UIHelper.createFrame("QuizMaster - Home", 550, 550);
+        JFrame frame = UIHelper.createFrame("QuizMaster - Home", 580, 580);
         currentFrame = frame;
         frame.setLayout(new BorderLayout());
 
@@ -33,94 +33,111 @@ public class Main {
             frame.repaint();
         });
 
-        JPanel headerRight = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        JPanel headerRight = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
         headerRight.setOpaque(false);
         headerRight.add(darkToggle);
         header.add(headerRight, BorderLayout.EAST);
         frame.add(header, BorderLayout.NORTH);
 
-        JPanel mainPanel = new JPanel(new BorderLayout());
+        // Main content
+        JPanel mainPanel = new JPanel();
         mainPanel.setBackground(UIHelper.BG);
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(15, 30, 15, 30));
+        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 35, 20, 35));
 
         // Welcome Card
         JPanel welcomeCard = UIHelper.createCard();
-        welcomeCard.setLayout(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(8, 10, 8, 10);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.weightx = 1;
+        welcomeCard.setLayout(new BoxLayout(welcomeCard, BoxLayout.Y_AXIS));
+        welcomeCard.setBorder(BorderFactory.createEmptyBorder(25, 30, 25, 30));
 
-        JLabel title = UIHelper.createBoldLabel("Welcome to QuizMaster!", 20);
-        title.setHorizontalAlignment(SwingConstants.CENTER);
-        JLabel subtitle = UIHelper.createLabel("Test your programming knowledge");
-        subtitle.setHorizontalAlignment(SwingConstants.CENTER);
+        JLabel title = UIHelper.createBoldLabel("Welcome to QuizMaster!", 22);
+        title.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        JLabel subtitle = UIHelper.createLabel("Test your programming knowledge with timed quizzes");
+        subtitle.setAlignmentX(Component.LEFT_ALIGNMENT);
         subtitle.setForeground(UIHelper.TEXT_GRAY);
 
-        gbc.gridx = 0; gbc.gridy = 0;
-        welcomeCard.add(title, gbc);
-        gbc.gridy = 1;
-        welcomeCard.add(subtitle, gbc);
+        JLabel pointsInfo = new JLabel("\uD83D\uDCA1  Earn points: Easy=1x  |  Medium=2x  |  Hard=3x  |  Streak bonus up to +5");
+        pointsInfo.setFont(UIHelper.getFont(Font.PLAIN, 12));
+        pointsInfo.setForeground(UIHelper.PRIMARY);
+        pointsInfo.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        mainPanel.add(welcomeCard, BorderLayout.NORTH);
+        welcomeCard.add(title);
+        welcomeCard.add(Box.createVerticalStrut(8));
+        welcomeCard.add(subtitle);
+        welcomeCard.add(Box.createVerticalStrut(12));
+        welcomeCard.add(pointsInfo);
+
+        mainPanel.add(welcomeCard);
+        mainPanel.add(Box.createVerticalStrut(15));
 
         // Settings Card
         JPanel settingsCard = UIHelper.createCard();
         settingsCard.setLayout(new GridBagLayout());
-        GridBagConstraints gbc2 = new GridBagConstraints();
-        gbc2.insets = new Insets(8, 10, 8, 10);
-        gbc2.fill = GridBagConstraints.HORIZONTAL;
-        gbc2.weightx = 1;
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(6, 8, 6, 8);
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        JLabel catLabel = UIHelper.createLabel("Category:");
-        catLabel.setFont(UIHelper.getFont(Font.BOLD, 13));
+        JLabel settingsTitle = UIHelper.createBoldLabel("Quiz Settings", 16);
+        gbc.gridx = 0; gbc.gridy = 0; gbc.gridwidth = 2;
+        settingsCard.add(settingsTitle, gbc);
+
+        gbc.gridy = 1; gbc.gridwidth = 1;
+        settingsCard.add(Box.createVerticalStrut(8), gbc);
+
+        // Category
+        gbc.gridy = 2;
+        JLabel catLabel = UIHelper.createLabel("Category");
+        catLabel.setFont(UIHelper.getFont(Font.BOLD, 12));
+        settingsCard.add(catLabel, gbc);
+
         List<String> categories = manager.getCategories();
         categories.add(0, "All");
         JComboBox<String> catCombo = new JComboBox<>(categories.toArray(new String[0]));
         catCombo.setFont(UIHelper.getFont(Font.PLAIN, 13));
-        catCombo.setPreferredSize(new Dimension(200, 35));
+        catCombo.setPreferredSize(new Dimension(220, 38));
+        gbc.gridx = 1;
+        settingsCard.add(catCombo, gbc);
 
-        JLabel diffLabel = UIHelper.createLabel("Difficulty:");
-        diffLabel.setFont(UIHelper.getFont(Font.BOLD, 13));
+        // Difficulty
+        gbc.gridx = 0; gbc.gridy = 3;
+        JLabel diffLabel = UIHelper.createLabel("Difficulty");
+        diffLabel.setFont(UIHelper.getFont(Font.BOLD, 12));
+        settingsCard.add(diffLabel, gbc);
+
         List<String> difficulties = manager.getDifficulties();
         JComboBox<String> diffCombo = new JComboBox<>(difficulties.toArray(new String[0]));
         diffCombo.setFont(UIHelper.getFont(Font.PLAIN, 13));
-        diffCombo.setPreferredSize(new Dimension(200, 35));
+        diffCombo.setPreferredSize(new Dimension(220, 38));
+        gbc.gridx = 1;
+        settingsCard.add(diffCombo, gbc);
 
-        JLabel countLabel = UIHelper.createLabel("Number of Questions:");
-        countLabel.setFont(UIHelper.getFont(Font.BOLD, 13));
+        // Count
+        gbc.gridx = 0; gbc.gridy = 4;
+        JLabel countLabel = UIHelper.createLabel("Questions");
+        countLabel.setFont(UIHelper.getFont(Font.BOLD, 12));
+        settingsCard.add(countLabel, gbc);
+
         Integer[] counts = {5, 10, 15, 20};
         JComboBox<Integer> countCombo = new JComboBox<>(counts);
         countCombo.setFont(UIHelper.getFont(Font.PLAIN, 13));
-        countCombo.setPreferredSize(new Dimension(200, 35));
+        countCombo.setPreferredSize(new Dimension(220, 38));
+        gbc.gridx = 1;
+        settingsCard.add(countCombo, gbc);
 
-        // Points info
-        JLabel pointsInfo = UIHelper.createLabel("\uD83D\uDCA1 Easy=1x | Medium=2x | Hard=3x | Streak bonus up to +5");
-        pointsInfo.setFont(UIHelper.getFont(Font.PLAIN, 11));
-        pointsInfo.setForeground(UIHelper.TEXT_GRAY);
+        mainPanel.add(settingsCard);
+        mainPanel.add(Box.createVerticalStrut(15));
 
-        gbc2.gridx = 0; gbc2.gridy = 0;
-        settingsCard.add(catLabel, gbc2);
-        gbc2.gridy = 1;
-        settingsCard.add(catCombo, gbc2);
-        gbc2.gridy = 2;
-        settingsCard.add(diffLabel, gbc2);
-        gbc2.gridy = 3;
-        settingsCard.add(diffCombo, gbc2);
-        gbc2.gridy = 4;
-        settingsCard.add(countLabel, gbc2);
-        gbc2.gridy = 5;
-        settingsCard.add(countCombo, gbc2);
-        gbc2.gridy = 6;
-        settingsCard.add(pointsInfo, gbc2);
-
+        // Start Button
         JButton startBtn = UIHelper.createButton("Start Quiz", UIHelper.PRIMARY);
-        startBtn.setPreferredSize(new Dimension(200, 45));
+        startBtn.setPreferredSize(new Dimension(250, 50));
+        startBtn.setFont(UIHelper.getFont(Font.BOLD, 15));
+        startBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
         startBtn.addActionListener(e -> {
             String category = (String) catCombo.getSelectedItem();
             String difficulty = (String) diffCombo.getSelectedItem();
             int count = (Integer) countCombo.getSelectedItem();
-
             manager.startQuiz(category, difficulty, count);
             if (manager.getTotalQuestions() == 0) {
                 JOptionPane.showMessageDialog(frame, "No questions available for this selection!", "Error", JOptionPane.ERROR_MESSAGE);
@@ -130,38 +147,40 @@ public class Main {
             new QuizWindow(manager);
         });
 
-        gbc2.gridy = 7;
-        settingsCard.add(startBtn, gbc2);
+        JPanel startPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        startPanel.setBackground(UIHelper.BG);
+        startPanel.add(startBtn);
+        mainPanel.add(startPanel);
 
-        mainPanel.add(settingsCard, BorderLayout.CENTER);
+        mainPanel.add(Box.createVerticalStrut(10));
 
         // Bottom buttons
-        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
+        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
         bottomPanel.setBackground(UIHelper.BG);
 
         JButton scoresBtn = UIHelper.createButton("High Scores", UIHelper.WARNING);
         scoresBtn.addActionListener(e -> showHighScores());
 
-        JButton historyBtn = UIHelper.createButton("Quiz History", new Color(103, 58, 183));
+        JButton historyBtn = UIHelper.createButton("Quiz History", new Color(139, 92, 246));
         historyBtn.addActionListener(e -> showQuizHistory());
 
         bottomPanel.add(scoresBtn);
         bottomPanel.add(historyBtn);
-        mainPanel.add(bottomPanel, BorderLayout.SOUTH);
+        mainPanel.add(bottomPanel);
 
         frame.add(mainPanel, BorderLayout.CENTER);
         frame.setVisible(true);
     }
 
     private void showHighScores() {
-        JFrame frame = UIHelper.createFrame("QuizMaster - High Scores", 600, 400);
+        JFrame frame = UIHelper.createFrame("QuizMaster - High Scores", 650, 420);
         frame.setLayout(new BorderLayout());
 
         frame.add(UIHelper.createGradientHeader("\uD83C\uDFC6", "HIGH SCORES"), BorderLayout.NORTH);
 
         JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.setBackground(UIHelper.BG);
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(15, 25, 15, 25));
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
 
         List<QuizResult> scores = manager.getHighScores();
 
@@ -184,16 +203,21 @@ public class Main {
 
             JTable table = new JTable(data, columns);
             table.setFont(UIHelper.getFont(Font.PLAIN, 13));
-            table.setRowHeight(35);
+            table.setRowHeight(38);
             table.getTableHeader().setFont(UIHelper.getFont(Font.BOLD, 13));
             table.getTableHeader().setBackground(UIHelper.PRIMARY);
             table.getTableHeader().setForeground(Color.WHITE);
+            table.getTableHeader().setPreferredSize(new Dimension(0, 40));
             table.setEnabled(false);
             table.setBackground(UIHelper.CARD_BG);
             table.setForeground(UIHelper.TEXT_DARK);
+            table.setGridColor(UIHelper.TABLE_BORDER);
+            table.setShowGrid(true);
+            table.setIntercellSpacing(new Dimension(1, 1));
 
             JScrollPane scrollPane = new JScrollPane(table);
             scrollPane.setBorder(BorderFactory.createEmptyBorder());
+            scrollPane.getViewport().setBackground(UIHelper.CARD_BG);
             mainPanel.add(scrollPane, BorderLayout.CENTER);
         }
 
@@ -209,14 +233,14 @@ public class Main {
     }
 
     private void showQuizHistory() {
-        JFrame frame = UIHelper.createFrame("QuizMaster - Quiz History", 650, 450);
+        JFrame frame = UIHelper.createFrame("QuizMaster - Quiz History", 700, 450);
         frame.setLayout(new BorderLayout());
 
         frame.add(UIHelper.createGradientHeader("\uD83D\uDCD6", "QUIZ HISTORY"), BorderLayout.NORTH);
 
         JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.setBackground(UIHelper.BG);
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(15, 25, 15, 25));
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
 
         List<QuizResult> history = manager.getQuizHistory();
 
@@ -240,16 +264,19 @@ public class Main {
 
             JTable table = new JTable(data, columns);
             table.setFont(UIHelper.getFont(Font.PLAIN, 12));
-            table.setRowHeight(32);
+            table.setRowHeight(36);
             table.getTableHeader().setFont(UIHelper.getFont(Font.BOLD, 12));
             table.getTableHeader().setBackground(UIHelper.PRIMARY);
             table.getTableHeader().setForeground(Color.WHITE);
+            table.getTableHeader().setPreferredSize(new Dimension(0, 40));
             table.setEnabled(false);
             table.setBackground(UIHelper.CARD_BG);
             table.setForeground(UIHelper.TEXT_DARK);
+            table.setGridColor(UIHelper.TABLE_BORDER);
 
             JScrollPane scrollPane = new JScrollPane(table);
             scrollPane.setBorder(BorderFactory.createEmptyBorder());
+            scrollPane.getViewport().setBackground(UIHelper.CARD_BG);
             mainPanel.add(scrollPane, BorderLayout.CENTER);
         }
 
